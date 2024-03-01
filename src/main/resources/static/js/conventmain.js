@@ -1,34 +1,34 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('conventForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Zapobiega domyślnej akcji formularza
+    // Pobierz miejsce w HTML, gdzie ma być wyświetlona lista konwentów
+    const conventList = document.getElementById('conventList');
 
-        // Pobierz dane z formularza
-        const name = document.getElementById('name').value;
-        const date = document.getElementById('date').value;
-
-        // Utwórz obiekt FormData i dodaj do niego dane formularza
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('date', date);
-
-        // Wyślij zapytanie POST do serwera
-        fetch('/convent/add', {
-            method: 'POST',
-            body: formData
-        })
+    // Funkcja do pobrania i wyświetlenia listy konwentów
+    function displayConvents() {
+        // Wyślij zapytanie GET do serwera o pobranie listy konwentów
+        fetch('/convent/all')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Wystąpił błąd podczas dodawania konwentu.');
+                    throw new Error('Wystąpił błąd podczas pobierania listy konwentów.');
                 }
                 return response.json();
             })
             .then(data => {
-                alert(data.message); // Wyświetl komunikat zwrotny
-                // Przeładuj stronę po dodaniu konwentu
-                window.location.reload();
+                // Wyczyść listę konwentów przed wyświetleniem nowych danych
+                conventList.innerHTML = '';
+
+                // Iteruj przez otrzymane dane i dodaj każdy konwent do listy
+                data.forEach(convent => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${convent.name} - ${convent.date}`;
+                    conventList.appendChild(listItem);
+                });
             })
             .catch(error => {
-                alert(error.message);
+                console.error(error);
+                // Obsłuż błąd, jeśli wystąpił
             });
-    });
+    }
+
+    // Wywołaj funkcję, aby wyświetlić listę konwentów po załadowaniu strony
+    displayConvents();
 });

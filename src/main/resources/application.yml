@@ -21,6 +21,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
+        ddl-auto: update   # Dodana właściwość ddl-auto
 logging:
   level:
     root: DEBUG

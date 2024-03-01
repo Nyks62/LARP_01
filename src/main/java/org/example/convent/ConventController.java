@@ -3,6 +3,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -20,7 +21,9 @@ public class ConventController {
     }
 
     @GetMapping("/main")
-    public String showMainPage() {
+    public String showMainPage(Model model) {
+        List<Convent> convents = conventService.getAllConvents();
+        model.addAttribute("convents", convents);
         return "conventmain";
     }
 
@@ -45,15 +48,15 @@ public class ConventController {
             name = obj.getString("name");
             date = obj.getString("date");
 
-            String logname = name +".txt";
+            /*String logname = name +".txt";
 
         FileWriter myWriter = new FileWriter(logname);
         myWriter.write("\n POTATO logger body:" + body);
             myWriter.write("\n POTATO logger name:" + name);
             myWriter.write("\n POTATO logger date:" + date);
 
-            myWriter.close();
-    } catch (IOException | JSONException e) {
+            myWriter.close();*/
+    } catch (/*IOException | */JSONException e) {
             throw new RuntimeException(e);
         }
 

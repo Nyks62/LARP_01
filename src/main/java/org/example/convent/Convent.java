@@ -3,7 +3,7 @@ package org.example.convent;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity
+@Entity(name = "CONVENT")
 public class Convent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

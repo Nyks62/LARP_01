@@ -28,7 +28,7 @@ public class LoginController {
         return "adminpanel";
     }
 
-    @GetMapping("/userpanel/home")
+    @GetMapping("/userpanelhome")
     public String userPanelHome() {
         return "userpanel/home";
     }

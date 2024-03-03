@@ -28,12 +28,11 @@ public class SecurityConfiguration {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/adminpanel/**").hasRole("ADMIN")
-                                .requestMatchers("/adminall/**").hasRole("ADMIN")
-                                .requestMatchers("/userpanel/**", "/userpanel/home/**", "/usertags/**").hasRole("USER")
+                                .requestMatchers("/adminpanel/**").authenticated()
+                                .requestMatchers("/adminall/**").authenticated()
+                                .requestMatchers("/userpanel/**", "/userpanel/home/**", "/usertags/**").authenticated()
                                 .requestMatchers("/", "/mainpage").permitAll()
                                 .anyRequest().authenticated()
-                                .and()
                 )
                 .formLogin()
                 .loginPage("/login")
@@ -42,7 +41,10 @@ public class SecurityConfiguration {
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .permitAll();
+                .permitAll()
+                .and()
+                .csrf().disable();
+
 
         return http.build();
     }

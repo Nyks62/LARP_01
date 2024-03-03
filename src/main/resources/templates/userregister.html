@@ -10,7 +10,7 @@
 <h1>User Registration</h1>
 <!-- Dodaj swoje treści tutaj -->
 
-<form action="/userregister" method="post">
+<form id="registrationForm" action="/userregister" method="post">
     <div>
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
@@ -27,8 +27,7 @@
 </form>
 
 <!-- Wyświetlanie błędów -->
-<div th:if="${error}" class="error">
-    <p th:text="${error}"></p>
-</div>
+<div id="errorMessage" class="error"></div>
+
 </body>
 </html>

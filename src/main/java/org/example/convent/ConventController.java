@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,16 +18,12 @@ import java.util.List;
 public class ConventController {
 
     private final ConventService conventService;
-  //  private final JavaMailSender javaMailSender;
 
-    private List<Convent> selectedConvents = new ArrayList<>();
-    private List<Chosen> chosenConvents = new ArrayList<>();
-    private final List<String> predefinedTags = Arrays.asList("postapo", "fantasy", "battlelarp", "high-larpówek", "cyberpunk", "reko", "steampunk", "chamber", "gra miejska"); // Lista predefiniowanych tagów
+    private final List<String> predefinedTags = Arrays.asList("postapo", "fantasy", "battlelarp", "high-larpówek", "cyberpunk", "reko", "steampunk", "chamber", "gra miejska");
 
     @Autowired
-    public ConventController(ConventService conventService /*JavaMailSender javaMailSender*/) {
+    public ConventController(ConventService conventService) {
         this.conventService = conventService;
-      /*  this.javaMailSender = javaMailSender;*/
     }
 
     @GetMapping("/main")
@@ -43,17 +41,17 @@ public class ConventController {
 
     @GetMapping("/add")
     public String showAddConventForm(Model model) {
-        model.addAttribute("tags", predefinedTags); // Przekazanie listy tagów do widoku
+        model.addAttribute("predefinedTags", predefinedTags);
         return "conventadd";
     }
 
-
     @PostMapping("/add")
-    public ResponseEntity<Convent> addConvent(@RequestBody Convent convent) {
+    public String addConvent(@RequestParam String name, @RequestParam String date, @RequestParam String tag) {
         try {
-            conventService.createNewConvent(convent.getName(), convent.getDate().toString(), convent.getTag());
-            List<Convent> allConvents = conventService.getAllConvents();
-            return ResponseEntity.ok().body(allConvents.get(allConvents.size() - 1));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            LocalDate parsedDate = LocalDate.parse(date, formatter);
+            conventService.createNewConvent(name, parsedDate.toString(), tag);
+            return "redirect:/convent/main";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

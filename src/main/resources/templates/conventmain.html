@@ -14,6 +14,51 @@
     <!-- Lista konwentów zostanie wygenerowana tutaj przez JavaScript -->
 </ul>
 
-<script src="../static/js/conventmain.js"></script>
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+<script>
+    // Pobierz miejsce w HTML, gdzie ma być wyświetlona lista konwentów
+    const conventList = document.getElementById('conventList');
+
+    // Funkcja do pobrania i wyświetlenia listy konwentów
+    function displayConvents() {
+        // Wyślij zapytanie GET do serwera o pobranie listy konwentów
+        fetch('/convent/all')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Wystąpił błąd podczas pobierania listy konwentów.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                conventList.innerHTML = '';
+
+                // Iteruj przez otrzymane dane i dodaj każdy konwent do listy
+                data.forEach(convent => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${convent.name} - ${convent.date}`;
+
+                    if (convent.tags && convent.tags.length > 0) {
+                        const tagList = document.createElement('ul');
+                        convent.tags.forEach(tag => {
+                            const tagItem = document.createElement('li');
+                            tagItem.textContent = tag.name;
+                            tagList.appendChild(tagItem);
+                        });
+                        listItem.appendChild(tagList);
+                    }
+
+                    conventList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error(error);
+
+            });
+    }
+
+
+    displayConvents();
+</script>
 </body>
 </html>

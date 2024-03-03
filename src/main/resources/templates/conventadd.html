@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,17 +8,17 @@
 </head>
 <body>
 <h1>Dodaj Nowy Konwent</h1>
-<form id="conventForm">
+<form id="conventForm" method="post" th:action="@{/convent/add}">
     <label for="name">Nazwa Konwentu:</label><br>
     <input type="text" id="name" name="name"><br>
     <label for="date">Data Konwentu (DD-MM-YYYY):</label><br>
     <input type="text" id="date" name="date" title="Wprowadź datę w formacie DD-MM-YYYY"><br>
     <label for="tag">Wybierz Tag:</label><br>
     <select id="tag" name="tag">
-        <!-- Options będą generowane dynamicznie przez JavaScript -->
+        <option th:each="tag : ${predefinedTags}" th:value="${tag}" th:text="${tag}"></option>
     </select><br><br>
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     <button type="submit">Dodaj Konwent</button>
 </form>
-<script src="../static/js/conventadd.js"></script>
 </body>
 </html>

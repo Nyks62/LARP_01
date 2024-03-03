@@ -20,6 +20,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.forEach(convent => {
                     const listItem = document.createElement('li');
                     listItem.textContent = `${convent.name} - ${convent.date}`;
+
+                    // Dodaj tagi konwentu do listy
+                    if (convent.tags && convent.tags.length > 0) {
+                        const tagList = document.createElement('ul');
+                        convent.tags.forEach(tag => {
+                            const tagItem = document.createElement('li');
+                            tagItem.textContent = tag.name;
+                            tagList.appendChild(tagItem);
+                        });
+                        listItem.appendChild(tagList);
+                    }
+
                     conventList.appendChild(listItem);
                 });
             })

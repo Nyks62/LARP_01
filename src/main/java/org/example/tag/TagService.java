@@ -1,13 +1,12 @@
 package org.example.tag;
 
-import org.example.tag.Tag;
-import org.example.tag.TagRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class TagService {
+
     private final TagRepository tagRepository;
 
     public TagService(TagRepository tagRepository) {
@@ -18,7 +17,11 @@ public class TagService {
         return tagRepository.findAll();
     }
 
-    public Tag addTag(Tag tag) {
-        return tagRepository.save(tag);
+    public void addTag(Tag tag) {
+        tagRepository.save(tag);
+    }
+
+    public Tag getTagById(Long id) {
+        return tagRepository.findById(id).orElse(null);
     }
 }

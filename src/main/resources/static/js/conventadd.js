@@ -1,54 +1,60 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('conventForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Zapobiega domyślnej akcji formularza
-        console.log('potato: start');
+    const conventForm = document.getElementById('conventForm');
+    const tagSelect = document.getElementById('tag');
 
-        // Pobierz dane z formularza
+    // Funkcja do pobrania tagów i wygenerowania opcji w select
+    function loadTags() {
+        const predefinedTags = ['postapo', 'fantasy', 'battlelarp', 'high-larpówek', 'cyberpunk', 'reko', 'steampunk', 'chamber', 'gra miejska']; // Lista predefiniowanych tagów
+
+        // Wyczyść istniejące opcje przed dodaniem nowych
+        tagSelect.innerHTML = '';
+
+        // Iteruj przez listę predefiniowanych tagów i dodaj każdy tag jako opcję w select
+        predefinedTags.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag;
+            option.textContent = tag;
+            tagSelect.appendChild(option);
+        });
+    }
+
+    // Wywołaj funkcję, aby załadować tagi przy ładowaniu strony
+    loadTags();
+
+    conventForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
         const name = document.getElementById('name').value;
-        let date = document.getElementById('date').value;
+        const date = document.getElementById('date').value;
+        const tag = document.getElementById('tag').value;
 
-        // Konwersja daty z formatu "DD-MM-YYYY" na "YYYY-MM-DD"
         const [day, month, year] = date.split('-');
-        date = `${year}-${month}-${day}`;
+        const formattedDate = `${year}-${month}-${day}`;
 
-        console.log('Name:', name);
-        console.log('Date:', date);
+        const jsonData = { name: name, date: formattedDate, tag: tag };
 
-        // Utwórz obiekt JSON
-        const jsonData = { name: name, date: date };
-
-        console.log('potato json:', jsonData);
-
-
-        // Przejdź do sekcji, gdzie wysyłane jest żądanie POST
         fetch('/convent/add', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(jsonData)
         })
             .then(response => {
-                if (!response.ok) {
-                    // Jeśli odpowiedź nie jest OK, sprawdź, czy zawiera treść
-                    return response.text().then(text => {
-                        throw new Error(`Wystąpił błąd podczas dodawania konwentu. Status: ${response.status}, Treść: ${text}`);
-                    });
+                if (response.ok) {
+                    return response.json();
                 }
-                return response.json();
+                throw new Error('Wystąpił błąd podczas dodawania konwentu.');
             })
             .then(data => {
+                console.log('Odpowiedź z serwera:', data);
                 alert('Konwent został dodany pomyślnie!');
-                // Przejdź do strony głównej po dodaniu konwentu
                 window.location.href = '/convent/main';
             })
             .catch(error => {
                 console.error('Błąd podczas wysyłania żądania:', error);
-                console.log('Odpowiedź z serwera:', error.response); // Dodaj to, aby zobaczyć odpowiedź z serwera
                 alert('Wystąpił błąd podczas dodawania konwentu. Sprawdź konsolę aby uzyskać więcej informacji.');
             });
     });
 });
-
-
-

@@ -1,18 +1,16 @@
-// Skrypt JavaScript dla panelu logowania użytkownika
+document.addEventListener("DOMContentLoaded", function() {
+    const loginForm = document.getElementById("loginForm");
+    const errorMessage = document.getElementById("errorMessage");
 
-document.getElementById('userLoginForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Zapobieganie domyślnej akcji przesyłania formularza
+    loginForm.addEventListener("submit", function(event) {
+        event.preventDefault(); // Zapobiegamy domyślnej akcji formularza
 
-    // Pobieranie danych z formularza
-    var email = document.getElementById('email').value;
-    var password = document.getElementById('password').value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-    // Walidacja danych
-    if (!email || !password) {
-        document.getElementById('error').innerText = 'Wypełnij wszystkie pola';
-        return;
-    }
+        // Tutaj możesz dodać dodatkową walidację danych logowania w JavaScript, jeśli jest potrzebna
 
-    // Wysyłanie formularza
-    this.submit();
+        // Jeśli wszystko jest w porządku, możemy zatwierdzić formularz
+        loginForm.submit();
+    });
 });

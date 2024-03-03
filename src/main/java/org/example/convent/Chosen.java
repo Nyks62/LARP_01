@@ -1,17 +1,11 @@
 package org.example.convent;
 
-public class ConventDTO {
+import java.time.LocalDate;
+
+public class Chosen {
     private String name;
-    private String date;
+    private LocalDate date;
     private String tag;
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
 
     public String getName() {
         return name;
@@ -21,11 +15,23 @@ public class ConventDTO {
         this.name = name;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
     public String getTag() {
         return tag;
     }
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public void setDateFromString(String dateString) {
+        this.date = LocalDate.parse(dateString);
     }
 }

@@ -8,11 +8,34 @@
 <body>
 <h1>Add Tag</h1>
 <form id="addTagForm">
-    <label for="tagName">Tag Name:</label>
-    <input type="text" id="tagName" name="tagName">
+    <label for="name">Tag Name:</label>
+    <input type="text" id="name" name="name">
     <button type="button" onclick="addTag()">Add Tag</button>
 </form>
 
-<script src="tagadd.js"></script>
+<script>
+    function addTag() {
+        const tagName = document.getElementById("name").value;
+        const tag = { name: tagName };
+        fetch("/tag/add", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tag)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(addedTag => {
+                document.getElementById("name").value = "";
+                alert("Tag added successfully!");
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
 </body>
 </html>

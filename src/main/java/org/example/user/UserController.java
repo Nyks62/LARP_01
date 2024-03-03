@@ -1,82 +1,96 @@
 package org.example.user;
 
+import jakarta.validation.Valid;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.example.tag.Tag;
+import org.example.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
 
 @Controller
 public class UserController {
 
+    private final UserService userService;
+    private final TagService tagService;
+
+
     @Autowired
-    private UserService userService;
-
-    // Strona główna, wybór panelu
-    @GetMapping("/main")
-    public String mainPage() {
-        return "main";
+    public UserController(UserService userService, TagService tagService) {
+        this.userService = userService;
+        this.tagService = tagService;
     }
 
-    // Panel logowania dla administratora
-    @GetMapping("/adminlogin")
-    public String adminLoginPage() {
-        return "adminlogin";
+    @GetMapping("/userpanel")
+    public String userPanel() {
+        return "userpanel";
     }
 
-    // Obsługa logowania administratora
-    @PostMapping("/adminlogin")
-    public String adminLogin(@RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) {
-        // Sprawdzanie hasła admina
-        if (email.equals("admin@example.com") && password.equals("adminpassword")) {
-            // Pomyślne logowanie
-            return "redirect:/adminpanel";
-        } else {
-            // Błędne dane logowania
-            redirectAttributes.addFlashAttribute("error", "Nieprawidłowy email lub hasło");
-            return "redirect:/adminlogin";
-        }
+    @GetMapping("/userpanel/home")
+    public String userPanelHome() {
+        return "userpanelhome";
     }
 
-    // Panel logowania dla użytkownika
+    @GetMapping("/usertags")
+    public String chooseTags(Model model) {
+        List<Tag> tags = tagService.getAllTag();
+        model.addAttribute("tags", tags);
+        return "usertags";
+    }
+
     @GetMapping("/userlogin")
-    public String userLoginPage() {
+    public String userLogin() {
         return "userlogin";
     }
 
-    // Obsługa logowania użytkownika
     @PostMapping("/userlogin")
-    public String userLogin(@RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) {
-        // Sprawdzanie danych logowania użytkownika w bazie danych
-        User user = userService.findByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
-            // Pomyślne logowanie
-            return "redirect:/userpanel";
-        } else {
-            // Błędne dane logowania
-            redirectAttributes.addFlashAttribute("error", "Nieprawidłowy email lub hasło");
+    public String login(@ModelAttribute("user") @Valid User user,
+                        BindingResult result,
+                        RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "userlogin";
+        }
+
+        User existingUser = userService.findByEmail(user.getEmail());
+        if (existingUser == null || !existingUser.getPassword().equals(user.getPassword())) {
+            redirectAttributes.addFlashAttribute("error", "Invalid email or password");
             return "redirect:/userlogin";
         }
+
+        return "redirect:/usertags";
     }
 
-    // Strona rejestracji dla użytkownika
     @GetMapping("/userregister")
-    public String userRegisterPage() {
+    public String showRegistrationForm(@ModelAttribute("user") User user) {
         return "userregister";
     }
 
-    // Obsługa rejestracji użytkownika
     @PostMapping("/userregister")
-    public String userRegister(@RequestParam String email, @RequestParam String password, @RequestParam String confirmPassword, RedirectAttributes redirectAttributes) {
-        // Sprawdzanie czy hasła się zgadzają i czy mają co najmniej 5 znaków
-        if (!password.equals(confirmPassword)) {
-            redirectAttributes.addFlashAttribute("error", "Hasła się nie zgadzają");
-            return "redirect:/userregister";
+    public String registerUser(@ModelAttribute("user") @Valid User user,
+                               BindingResult result,
+                               RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "userregister";
         }
-        if (password.length() < 5) {
-            redirectAttributes.addFlashAttribute("error", "Hasło musi mieć co najmniej 5 znaków");
+
+        if (!user.getPassword().equals(user.getConfirmPassword())) {
+            redirectAttributes.addFlashAttribute("error", "Passwords do not match");
             return "redirect:/userregister";
         }
 
-        return "redirect:/userlogin"; // Po rejestracji przekierowujemy do panelu logowania użytkownika
+        if (userService.registerUser(user)) {
+            return "redirect:/userpanel";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Email address already registered");
+            return "redirect:/userregister";
+        }
     }
 }

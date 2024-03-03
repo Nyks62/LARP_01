@@ -1,19 +1,23 @@
 package org.example.convent;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
-@Entity(name = "CONVENT")
+@Entity(name = "convent")
 public class Convent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name="date")
+    @Column(name = "date")
     private LocalDate date;
+
+    @Column(name = "tag")
+    private String tag;
 
     public Long getId() {
         return id;
@@ -37,5 +41,13 @@ public class Convent {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }
